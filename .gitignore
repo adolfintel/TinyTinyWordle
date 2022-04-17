@@ -1,0 +1,4 @@
+_priv
+PC/cookDictionary
+PC/*.cooked.bin
+PC/*.arduino.h
