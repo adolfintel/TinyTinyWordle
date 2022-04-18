@@ -1,4 +1,4 @@
-#include <Adafruit_SSD1306.h>
+#include "ssd1306/MiniSSD1306.h"
 #include <Wire.h>
 
 #define DISPLAY_ADDRESS 0x3C
@@ -36,7 +36,7 @@ uint8_t getButton(){
   }
 }
 
-Adafruit_SSD1306 display(128, 64, &Wire, -1, 1000000UL, 1000000UL);
+MiniSSD1306 display(128, 64, &Wire, -1, 1000000UL, 1000000UL);
 
 void displayLetter(char c, bool inverted, bool border, uint8_t x, uint8_t y){
   display.setTextSize(1);
@@ -171,22 +171,6 @@ void transition(uint8_t color){
   }while(f<1);
 }
 
-//specialTranistion removed because it used too much program memory
-/*void specialTransition(uint8_t color){
-  long ts=micros();
-  float f=0;
-  do{
-    f=(float)(micros()-ts)/(float)(4*TRANSITION_TIME);
-    uint16_t x1=cos(4*f)*128*f+64, y1=sin(4*f)*64*f+32,
-            x2=cos(2*PI/3+4*f)*128*f+64, y2=sin(2*PI/3+4*f)*64*f+32,
-            x3=cos(-2*PI/3+4*f)*128*f+64, y3=sin(-2*PI/3+4*f)*64*f+32;
-    display.fillTriangle(x1,y1,x2,y2,x3,y3,color);
-    display.display();
-  }while(f<1);
-  display.fillRect(0,0,128,64,color);
-}*/
-#define specialTransition(color) transition(color)
-
 void endgame(char* w, uint8_t wordLength, bool failed){
   delay(200);
   transition(failed?SSD1306_BLACK:SSD1306_WHITE);
@@ -204,8 +188,8 @@ void endgame(char* w, uint8_t wordLength, bool failed){
 #define lose(w,len) endgame(w,len,true)
 
 void combo(uint8_t n){
-  specialTransition(SSD1306_WHITE);
-  specialTransition(SSD1306_BLACK);
+  transition(SSD1306_WHITE);
+  transition(SSD1306_BLACK);
   printCentered(COMBO,0,2,false);
   char temp[8];
   sprintf(temp,"x%d",n);
@@ -232,7 +216,6 @@ void splashScreen(){
 
 void ioInit(){
   display.begin(SSD1306_SWITCHCAPVCC, DISPLAY_ADDRESS);
-  clearDisplay();
   pinMode(BUTTON_UP,INPUT_PULLUP);
   pinMode(BUTTON_LEFT,INPUT_PULLUP);
   pinMode(BUTTON_DOWN,INPUT_PULLUP);

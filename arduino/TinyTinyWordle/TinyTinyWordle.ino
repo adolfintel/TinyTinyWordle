@@ -1,10 +1,12 @@
-//#define DEBUG_BUILD
-
+//Change language and dictionary by commenting/uncommenting the following lines:
 #include "locale-en.h"
+//#include "locale-it.h"
 
 #include "dictionary.h"
 #include "userInteraction.h"
 #include "game.h"
+
+//#define DEBUG_BUILD
 
 void setup() {
   ioInit();
