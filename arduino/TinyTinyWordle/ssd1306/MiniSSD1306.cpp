@@ -1,10 +1,6 @@
 //This is a barebones stripped-down version of the Adafruit SSD1306 library to save progmem in TinyTinyWordle
 
-#include <avr/pgmspace.h>
-
 #define WIRE_MAX 32
-
-#define ssd1306_swap(a, b) (((a) ^= (b)), ((b) ^= (a)), ((a) ^= (b)))
 
 MiniSSD1306::MiniSSD1306(TwoWire *twi)
     : MiniAdafruit_GFX(128,64), wire(twi), buffer(NULL)
@@ -18,13 +14,6 @@ MiniSSD1306::~MiniSSD1306(void) {
   }
 }
 
-void MiniSSD1306::ssd1306_command1(uint8_t c) {
-  wire->beginTransmission(i2caddr);
-  wire->write((uint8_t)0x00);
-  wire->write(c);
-  wire->endTransmission();
-}
-
 void MiniSSD1306::ssd1306_commandList(const uint8_t *c, uint8_t n) {
   wire->beginTransmission(i2caddr);
   wire->write((uint8_t)0x00);
@@ -36,14 +25,10 @@ void MiniSSD1306::ssd1306_commandList(const uint8_t *c, uint8_t n) {
       wire->write((uint8_t)0x00);
       bytesOut = 1;
     }
-    wire->write(pgm_read_byte(c++));
+    wire->write(*(c++));
     bytesOut++;
   }
   wire->endTransmission();
-}
-
-void MiniSSD1306::ssd1306_command(uint8_t c) {
-  ssd1306_command1(c);
 }
 
 bool MiniSSD1306::begin(uint8_t vcs, uint8_t addr, uint32_t clk) {
@@ -59,44 +44,35 @@ bool MiniSSD1306::begin(uint8_t vcs, uint8_t addr, uint32_t clk) {
   wire->setClock(clk);
 
   // Init sequence
-  static const uint8_t PROGMEM init1[] = {SSD1306_DISPLAYOFF,         // 0xAE
-                                          SSD1306_SETDISPLAYCLOCKDIV, // 0xD5
-                                          0x80, // the suggested ratio 0x80
-                                          SSD1306_SETMULTIPLEX}; // 0xA8
-  ssd1306_commandList(init1, sizeof(init1));
-  ssd1306_command1(64 - 1);
-
-  static const uint8_t PROGMEM init2[] = {SSD1306_SETDISPLAYOFFSET, // 0xD3
-                                          0x0,                      // no offset
-                                          SSD1306_SETSTARTLINE | 0x0, // line #0
-                                          SSD1306_CHARGEPUMP};        // 0x8D
-  ssd1306_commandList(init2, sizeof(init2));
-
-  ssd1306_command1((vcs == SSD1306_EXTERNALVCC) ? 0x10 : 0x14);
-
-  static const uint8_t PROGMEM init3[] = {SSD1306_MEMORYMODE, // 0x20
-                                          0x00, // 0x0 act like ks0108
-                                          SSD1306_SEGREMAP | 0x1,
-                                          SSD1306_COMSCANDEC};
-  ssd1306_commandList(init3, sizeof(init3));
-
-  uint8_t comPins = 0x12;
-
-  ssd1306_command1(SSD1306_SETCOMPINS);
-  ssd1306_command1(comPins);
-  ssd1306_command1(SSD1306_SETCONTRAST);
-  ssd1306_command1((vcs == SSD1306_EXTERNALVCC) ? 0x9F : 0xCF);
-
-  ssd1306_command1(SSD1306_SETPRECHARGE); // 0xd9
-  ssd1306_command1((vcs == SSD1306_EXTERNALVCC) ? 0x22 : 0xF1);
-  static const uint8_t PROGMEM init5[] = {
-      SSD1306_SETVCOMDETECT, // 0xDB
-      0x40,
-      SSD1306_DISPLAYALLON_RESUME, // 0xA4
-      SSD1306_NORMALDISPLAY,       // 0xA6
-      SSD1306_DEACTIVATE_SCROLL,
-      SSD1306_DISPLAYON}; // Main screen turn on
-  ssd1306_commandList(init5, sizeof(init5));
+  static const uint8_t initSeq[] = {
+                                      SSD1306_DISPLAYOFF,
+                                      SSD1306_SETDISPLAYCLOCKDIV,
+                                      0x80,
+                                      SSD1306_SETMULTIPLEX,
+                                      0x3F,
+                                      SSD1306_SETDISPLAYOFFSET,
+                                      0x00,
+                                      SSD1306_SETSTARTLINE | 0x00,
+                                      SSD1306_CHARGEPUMP,
+                                      (vcs == SSD1306_EXTERNALVCC) ? 0x10 : 0x14,
+                                      SSD1306_MEMORYMODE,
+                                      0x00,
+                                      SSD1306_SEGREMAP | 0x01,
+                                      SSD1306_COMSCANDEC,
+                                      SSD1306_SETCOMPINS,
+                                      0x12,
+                                      SSD1306_SETCONTRAST,
+                                      (vcs == SSD1306_EXTERNALVCC) ? 0x9F : 0xCF,
+                                      SSD1306_SETPRECHARGE,
+                                      (vcs == SSD1306_EXTERNALVCC) ? 0x22 : 0xF1,
+                                      SSD1306_SETVCOMDETECT,
+                                      0x40,
+                                      SSD1306_DISPLAYALLON_RESUME,
+                                      SSD1306_NORMALDISPLAY,
+                                      SSD1306_DEACTIVATE_SCROLL,
+                                      SSD1306_DISPLAYON
+  };
+  ssd1306_commandList(initSeq, sizeof(initSeq));
 
   return true; // Success
 }
@@ -228,13 +204,14 @@ void MiniSSD1306::drawFastVLine(int16_t x, int16_t __y,
 }
 
 void MiniSSD1306::display(void) {
-  static const uint8_t PROGMEM dlist1[] = {
+  static const uint8_t dlist1[] = {
       SSD1306_PAGEADDR,
-      0,                      // Page start address
+      0x00,                      // Page start address
       0xFF,                   // Page end (not really, but works here)
-      SSD1306_COLUMNADDR, 0}; // Column start address
+      SSD1306_COLUMNADDR, 0x00, // Column start address
+      0x7F
+  }; 
   ssd1306_commandList(dlist1, sizeof(dlist1));
-  ssd1306_command1(128 - 1); // Column end address
 
   uint16_t count = 128 * ((64 + 7) / 8);
   uint8_t *ptr = buffer;

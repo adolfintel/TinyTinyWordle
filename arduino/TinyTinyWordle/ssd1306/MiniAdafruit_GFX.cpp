@@ -3,15 +3,6 @@
 #include "glcdfont.c"
 #include <avr/pgmspace.h>
 
-#define pgm_read_pointer(addr) ((void *)pgm_read_word(addr))
-
-#define _swap_int16_t(a, b)                                                    \
-  {                                                                            \
-    int16_t t = a;                                                             \
-    a = b;                                                                     \
-    b = t;                                                                     \
-  }
-
 MiniAdafruit_GFX::MiniAdafruit_GFX(int16_t w, int16_t h) : WIDTH(w), HEIGHT(h) {
   cursor_y = cursor_x = 0;
   textsize = 1;

@@ -57,12 +57,8 @@ public:
   void clearDisplay(void);
   void drawFastHLine(int16_t x, int16_t y, int16_t w, uint16_t color);
   void drawFastVLine(int16_t x, int16_t y, int16_t h, uint16_t color);
-  void ssd1306_command(uint8_t c);
-
-protected:
-  void ssd1306_command1(uint8_t c);
   void ssd1306_commandList(const uint8_t *c, uint8_t n);
-
+protected:
   TwoWire *wire;   ///< Initialized during construction when using I2C. See
                    ///< Wire.cpp, Wire.h
   uint8_t *buffer; ///< Buffer data used for display buffer. Allocated when
