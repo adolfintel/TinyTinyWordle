@@ -2,6 +2,7 @@
 #include <Wire.h>
 
 #define DISPLAY_ADDRESS 0x3C
+#define DISPLAY_CLOCK 1000000UL //set this to 400000UL if you have rendering issues
 
 #define BUTTON_UP 2
 #define BUTTON_LEFT 3
@@ -36,7 +37,7 @@ uint8_t getButton(){
   }
 }
 
-MiniSSD1306 display(128, 64, &Wire, -1, 1000000UL, 1000000UL);
+MiniSSD1306 display(&Wire);
 
 void displayLetter(char c, bool inverted, bool border, uint8_t x, uint8_t y){
   display.setTextSize(1);
@@ -68,11 +69,6 @@ void printCentered(char* text, uint8_t y, uint8_t fontSize, bool inverted){
   uint8_t x=(128-strlen(text)*6*fontSize)/2;
   display.setCursor(x,y);
   display.print(text);
-}
-
-void clearDisplay(){
-  display.clearDisplay();
-  display.display();
 }
 
 #define SPACE_BETWEEN_COLUMNS 12
@@ -202,20 +198,49 @@ void combo(uint8_t n){
   transition(SSD1306_BLACK);
 }
 
+#define clearDisplay() display.clearDisplay()
+
 void splashScreen(){
   clearDisplay();
   printCentered(TINY_TINY,6,1,false);
+  display.display();
+  delay(300);
   printCentered(WORDLE,22,3,false);
   display.display();
-  delay(600);
+  delay(300);
   printCentered(PRESS_A_BUTTON,52,1,false);
+  display.display();
+  getButton();
+  transition(SSD1306_BLACK);
+  printCentered(GUESS_THE_WORD,4,1,false);
+  display.display();
+  delay(200);
+  displayLetter('A',true,true,4,16);
+  display.setTextColor(SSD1306_WHITE, SSD1306_BLACK);
+  display.setCursor(18,18);
+  display.print(CORRECT_LETTER);
+  display.display();
+  delay(100);
+  displayLetter('A',false,true,4,28);
+  display.setTextColor(SSD1306_WHITE, SSD1306_BLACK);
+  display.setCursor(18,30);
+  display.print(WRONG_POSITION);
+  display.display();
+  delay(100);
+  displayLetter('A',false,false,4,40);
+  display.setTextColor(SSD1306_WHITE, SSD1306_BLACK);
+  display.setCursor(18,42);
+  display.print(WRONG_LETTER);
+  display.display();
+  delay(100);
+  printCentered(PRESS_A_BUTTON,54,1,false);
   display.display();
   getButton();
   transition(SSD1306_BLACK);
 }
 
 void ioInit(){
-  display.begin(SSD1306_SWITCHCAPVCC, DISPLAY_ADDRESS);
+  display.begin(SSD1306_SWITCHCAPVCC, DISPLAY_ADDRESS, DISPLAY_CLOCK);
   pinMode(BUTTON_UP,INPUT_PULLUP);
   pinMode(BUTTON_LEFT,INPUT_PULLUP);
   pinMode(BUTTON_DOWN,INPUT_PULLUP);

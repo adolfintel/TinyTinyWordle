@@ -5,6 +5,10 @@
 #define THE_WORD_WAS "The word was"
 #define NOT_IN_DICTIONARY "Not in dictionary!"
 #define COMBO "COMBO"
+#define GUESS_THE_WORD "Guess the word"
+#define CORRECT_LETTER "Correct letter"
+#define WRONG_POSITION "Wrong position"
+#define WRONG_LETTER "Wrong letter"
 
 #define REDUCED_CHARSET //use only a subset of ASCII for the display to save significant amounts of progmem
 

@@ -48,14 +48,13 @@
 
 class MiniSSD1306 : public MiniAdafruit_GFX {
 public:
-  MiniSSD1306(uint8_t w, uint8_t h, TwoWire *twi = &Wire, int8_t rst_pin=-1, uint32_t clkDuring = 400000UL, uint32_t clkAfter = 100000UL);
+  MiniSSD1306(TwoWire *twi = &Wire);
 
   ~MiniSSD1306(void);
 
-  bool begin(uint8_t switchvcc = SSD1306_SWITCHCAPVCC, uint8_t i2caddr = 0, bool periphBegin = true);
+  bool begin(uint8_t switchvcc = SSD1306_SWITCHCAPVCC, uint8_t i2caddr = 0, uint32_t clk = 400000UL);
   void display(void);
   void clearDisplay(void);
-  void dim(bool dim);
   void drawFastHLine(int16_t x, int16_t y, int16_t w, uint16_t color);
   void drawFastVLine(int16_t x, int16_t y, int16_t h, uint16_t color);
   void ssd1306_command(uint8_t c);
@@ -69,12 +68,6 @@ protected:
   uint8_t *buffer; ///< Buffer data used for display buffer. Allocated when
                    ///< begin method is called.
   int8_t i2caddr;  ///< I2C address initialized when begin method is called.
-  int8_t vccstate; ///< VCC selection, set by begin method.
-  int8_t page_end; ///< not used
-  
-  uint32_t wireClk;    ///< Wire speed for SSD1306 transfers
-  uint32_t restoreClk; ///< Wire speed following SSD1306 transfers
-  uint8_t contrast; ///< normal contrast setting for this device
 };
 
 #include "MiniSSD1306.cpp"

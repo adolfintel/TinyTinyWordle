@@ -6,18 +6,13 @@
 
 #define ssd1306_swap(a, b) (((a) ^= (b)), ((b) ^= (a)), ((a) ^= (b)))
 
-#define TRANSACTION_START wire->setClock(wireClk);
-#define TRANSACTION_END wire->setClock(restoreClk);
-
-MiniSSD1306::MiniSSD1306(uint8_t w, uint8_t h, TwoWire *twi,
-                                   int8_t rst_pin, uint32_t clkDuring,
-                                   uint32_t clkAfter)
-    : MiniAdafruit_GFX(w, h), wire(twi), buffer(NULL), wireClk(clkDuring), restoreClk(clkAfter)
+MiniSSD1306::MiniSSD1306(TwoWire *twi)
+    : MiniAdafruit_GFX(128,64), wire(twi), buffer(NULL)
 {
 }
 
 MiniSSD1306::~MiniSSD1306(void) {
-  if (buffer) {
+  if(buffer){
     free(buffer);
     buffer = NULL;
   }
@@ -48,27 +43,20 @@ void MiniSSD1306::ssd1306_commandList(const uint8_t *c, uint8_t n) {
 }
 
 void MiniSSD1306::ssd1306_command(uint8_t c) {
-  TRANSACTION_START
   ssd1306_command1(c);
-  TRANSACTION_END
 }
 
-bool MiniSSD1306::begin(uint8_t vcs, uint8_t addr,
-                             bool periphBegin) {
+bool MiniSSD1306::begin(uint8_t vcs, uint8_t addr, uint32_t clk) {
 
   if ((!buffer) && !(buffer = (uint8_t *)malloc(128 * ((64 + 7) / 8))))
     return false;
 
   clearDisplay();
 
-  vccstate = vcs;
-
   i2caddr = addr;
-
-  if (periphBegin)
-    wire->begin();
-
-  TRANSACTION_START
+    
+  wire->begin();
+  wire->setClock(clk);
 
   // Init sequence
   static const uint8_t PROGMEM init1[] = {SSD1306_DISPLAYOFF,         // 0xAE
@@ -84,7 +72,7 @@ bool MiniSSD1306::begin(uint8_t vcs, uint8_t addr,
                                           SSD1306_CHARGEPUMP};        // 0x8D
   ssd1306_commandList(init2, sizeof(init2));
 
-  ssd1306_command1((vccstate == SSD1306_EXTERNALVCC) ? 0x10 : 0x14);
+  ssd1306_command1((vcs == SSD1306_EXTERNALVCC) ? 0x10 : 0x14);
 
   static const uint8_t PROGMEM init3[] = {SSD1306_MEMORYMODE, // 0x20
                                           0x00, // 0x0 act like ks0108
@@ -93,15 +81,14 @@ bool MiniSSD1306::begin(uint8_t vcs, uint8_t addr,
   ssd1306_commandList(init3, sizeof(init3));
 
   uint8_t comPins = 0x12;
-  contrast = (vccstate == SSD1306_EXTERNALVCC) ? 0x9F : 0xCF;
 
   ssd1306_command1(SSD1306_SETCOMPINS);
   ssd1306_command1(comPins);
   ssd1306_command1(SSD1306_SETCONTRAST);
-  ssd1306_command1(contrast);
+  ssd1306_command1((vcs == SSD1306_EXTERNALVCC) ? 0x9F : 0xCF);
 
   ssd1306_command1(SSD1306_SETPRECHARGE); // 0xd9
-  ssd1306_command1((vccstate == SSD1306_EXTERNALVCC) ? 0x22 : 0xF1);
+  ssd1306_command1((vcs == SSD1306_EXTERNALVCC) ? 0x22 : 0xF1);
   static const uint8_t PROGMEM init5[] = {
       SSD1306_SETVCOMDETECT, // 0xDB
       0x40,
@@ -110,8 +97,6 @@ bool MiniSSD1306::begin(uint8_t vcs, uint8_t addr,
       SSD1306_DEACTIVATE_SCROLL,
       SSD1306_DISPLAYON}; // Main screen turn on
   ssd1306_commandList(init5, sizeof(init5));
-
-  TRANSACTION_END
 
   return true; // Success
 }
@@ -243,7 +228,6 @@ void MiniSSD1306::drawFastVLine(int16_t x, int16_t __y,
 }
 
 void MiniSSD1306::display(void) {
-  TRANSACTION_START
   static const uint8_t PROGMEM dlist1[] = {
       SSD1306_PAGEADDR,
       0,                      // Page start address
@@ -268,5 +252,4 @@ void MiniSSD1306::display(void) {
     bytesOut++;
   }
   wire->endTransmission();
-  TRANSACTION_END
 }

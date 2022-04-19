@@ -64,14 +64,7 @@ void MiniAdafruit_GFX::drawChar(int16_t x, int16_t y, unsigned char c,
   for (int8_t i = 0; i < 5; i++) {
     uint8_t line = pgm_read_byte(&font[c*5+i]);
     for (int8_t j = 0; j < 8; j++, line >>= 1) {
-      if (line & 1) {
-        fillRect(x + i * size_x, y + j * size_y, size_x, size_y,
-                        color);
-          
-      } else if (bg != color) {
-        fillRect(x + i * size_x, y + j * size_y, size_x, size_y,
-                        bg);
-      }
+        fillRect(x + i * size_x, y + j * size_y, size_x, size_y, line&1?color:bg);
     }
   }
 }
@@ -80,7 +73,7 @@ size_t MiniAdafruit_GFX::write(uint8_t c) {
   if (c == '\n') {
     cursor_x = 0;
     cursor_y += textsize * 8;
-  } else if (c != '\r') {
+  } else {
     drawChar(cursor_x, cursor_y, c, textcolor, textbgcolor, textsize,
               textsize);
     cursor_x += textsize * 6;
