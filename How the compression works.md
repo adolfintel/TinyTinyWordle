@@ -8,7 +8,7 @@ Requirements:
 * Can run on an Arduino using very little RAM and progmem
 
 ## Compression
-The input dictionary file must be a simple text file containing one word per line (lines can end with \n or \r\n), words can only contain uppercase letters from A to Z and must be of the same length.
+The input dictionary file must be a simple text file containing one word per line (lines can end with `\n` or `\r\n`), words can only contain uppercase letters from A to Z and must be of the same length.
 
 This part must be done by a PC.
 
@@ -45,8 +45,8 @@ This can be done by the Arduino.
 4. Create an empty output string
 5. Repeat `wordLength` times:
     1. Create a character `c` initialized with all zero bits
-    1. For `i` from `0` to `5` (repeat five times):
-        1. Set the `i`-th bit of `c` to the value of the bit pointed by `bitN` inside the byte pointed by `byteN`
+    1. For `i` from `0` to `5` (five times):
+        1. Set the `i`-th bit (starting from the LSB) of `c` to the value of the bit pointed by `bitN` inside the byte pointed by `byteN`
         2. Increase `bitN` by `1`
         3. If `bitN = 8`, increase `byteN` by `1` and reset `bitN` to `0` (move to next byte in the compressed stream)
     2. Add `c` to the output string
