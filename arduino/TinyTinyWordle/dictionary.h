@@ -37,16 +37,14 @@ void getRandomWord(char* w){
 bool isWordInDictionary(char* w){
   char tmp[wordLength+1];
   uint16_t l=0, r=wordsInDictionary-1;
-  while(l<=r){
+  while(l<=r&&l>=0&&r<wordsInDictionary){
     uint16_t m=l+(r-l)/2;
     decompress(dictionary+3,m*wordLength,wordLength,tmp);
     int cmp=strcmp(w,tmp);
     if(cmp>0){
       l=m+1;
-      if(l<0) break;
     }else if(cmp<0){
       r=m-1;
-      if(r>=wordsInDictionary) break;
     }else{
       return true;
     }
