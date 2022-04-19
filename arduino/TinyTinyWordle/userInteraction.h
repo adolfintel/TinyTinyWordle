@@ -56,10 +56,16 @@ void displayLetter(char c, bool inverted, bool border, uint8_t x, uint8_t y){
   display.print(c);
 }
 
-void displayWord(char* text, uint8_t* colors, uint8_t x, uint8_t y, uint8_t len){
+#define WORD_ANIMATION_DELAY 75
+
+void displayWord(char* text, uint8_t* colors, uint8_t x, uint8_t y, uint8_t len, bool animated=false){
   for(uint8_t i=0;i<len;i++){
     displayLetter(text[i],colors[i]==2,colors[i]>=1,x,y);
     x+=10;
+    if(animated){
+      display.display();
+      delay(WORD_ANIMATION_DELAY);
+    }
   }
 }
 
@@ -80,12 +86,12 @@ void output(char* w, uint8_t* colors, uint8_t attempt, uint8_t attempts, uint8_t
     if(attempt>=attemptsPerColumn){
       x+=(wordLength*10)+SPACE_BETWEEN_COLUMNS;
     }
-    displayWord(w,colors,x,16+(attempt%attemptsPerColumn)*((64-16)/attemptsPerColumn),wordLength);
+    displayWord(w,colors,x,16+(attempt%attemptsPerColumn)*((64-16)/attemptsPerColumn),wordLength,true);
   }else{
     display.fillRect(0,0,128,16,SSD1306_BLACK);
     displayWord(w,colors,(128-(wordLength*10))/2,0,wordLength);
+    display.display();
   }
-  display.display();
 }
 
 void input(char* w, uint8_t wordLength, uint8_t attempt, uint8_t attempts){
