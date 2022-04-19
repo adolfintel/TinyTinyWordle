@@ -16,7 +16,7 @@ This project brings this popular word game to the Arduino Uno and compatible boa
 
 ## Requirements
 * An Arduino Uno or compatible board
-* A 128x64 Adafruit SSD1306 OLED display with I2C interface (that's the version with SDI/SCL pins and address 0x3C)
+* A 128x64 Adafruit SSD1306 OLED display with I2C interface (that's the version with SDA/SCL pins and address 0x3C)
 * 4 buttons, normally open
 * A breadboard and some wires to put it all together
 
