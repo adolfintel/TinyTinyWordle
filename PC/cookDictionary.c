@@ -59,12 +59,12 @@ int main(int argc, char* argv[]){
             len=l;
         }else{
             if(l!=len){
-                printf("All words must have the same length\n");
+                printf("All words must have the same length: \"%s\"\n",temp);
                 return 3;
             } 
         }
         if(!validate(temp)){
-            printf("Characters not allowed found in word: \"%s\"\n");
+            printf("Characters not allowed found in word: \"%s\"\n",temp);
             return 4;
         }
         strings=realloc(strings,(words+1)*sizeof(char*));
