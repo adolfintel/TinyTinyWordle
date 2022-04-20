@@ -1,6 +1,6 @@
 //Change language and dictionary by commenting/uncommenting the following lines:
-//#include "locale-en.h"
-#include "locale-it.h"
+#include "locale-en.h"
+//#include "locale-it.h"
 
 //Uncomment this to disable all non essential things (splash screen, tutorial, transitions, combos)
 //#define MINIMAL_BUILD
