@@ -89,13 +89,23 @@ int main(int argc, char* argv[]){
     }
     printf("Generating raw stream\n");
     char* data=calloc(words*len+1,sizeof(char));
-    int dataPtr=0;
+    int dataPtr=0, uniqueWords=0;
     for(int i=0;i<words;i++){
+        if(i>0){
+            if(strcmp(strings[i],strings[i-1])==0){
+                printf("Duplicate word found: \"%s\"\n",strings[i]);
+                continue;
+            }
+        }
         memcpy(data+dataPtr,strings[i],len);
         dataPtr+=len;
+        uniqueWords++;
+    }
+    for(int i=0;i<words;i++){
         free(strings[i]);
     }
     free(strings);
+    words=uniqueWords;
     printf("Compressing %d words of %d characters\n",words,len);
     int compressedSize;
     uint8_t* compressed=compress(data,&compressedSize);

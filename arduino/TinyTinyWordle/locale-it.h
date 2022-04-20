@@ -1,7 +1,7 @@
 #define TINY_TINY "Tiny Tiny"
 #define WORDLE "WORDLE"
 #define PRESS_A_BUTTON "Premi un tasto"
-#define WELL_DONE "Bravo!"
+#define WELL_DONE "Ben fatto!"
 #define THE_WORD_WAS "La parola era"
 #define NOT_IN_DICTIONARY "Non in dizionario!"
 #define COMBO "COMBO"

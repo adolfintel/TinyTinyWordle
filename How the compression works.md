@@ -14,7 +14,7 @@ This part must be done by a PC.
 
 1. Read the entire dictionary file in a string array
 2. Sort the array in alphabetical order
-3. Generate a long string with all the words without any kind of separator
+3. Generate a long string with all the words without any kind of separator, ignore duplicate words while doing this
 4. Create a byte array of size `ceil(nWords*wordLength*5/8)` initialized with all zero bits
 5. Initialize a pointer `byteN` at `0` and a bit pointer `bitN` at `0` (LSB) that points at a bit inside the byte pointed by `byteN` (we use these to point to specific bits inside the byte array)
 6. Compress each character `c` in the long string in this way:
