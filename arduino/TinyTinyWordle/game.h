@@ -48,6 +48,11 @@ bool game(){
   return false;
 }
 
+#ifdef MINIMAL_BUILD
+void gameLoop(){
+  game();
+}
+#else
 uint8_t comboCounter=0;
 void gameLoop() {
   if(game()) comboCounter++; else comboCounter=0;
@@ -55,3 +60,4 @@ void gameLoop() {
     combo(comboCounter);
   }
 }
+#endif

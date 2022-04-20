@@ -49,5 +49,6 @@ This can be done by the Arduino.
         1. Set the `i`-th bit (starting from the LSB) of `c` to the value of the bit pointed by `bitN` inside the byte pointed by `byteN`
         2. Increase `bitN` by `1`
         3. If `bitN = 8`, increase `byteN` by `1` and reset `bitN` to `0` (move to next byte in the compressed stream)
-    2. Add `c` to the output string
+    2. Add `'A'` to `c`
+    3. Append `c` to the output string
 6. Add a terminator to the output string

@@ -62,10 +62,12 @@ void displayWord(char* text, uint8_t* colors, uint8_t x, uint8_t y, uint8_t len,
   for(uint8_t i=0;i<len;i++){
     displayLetter(text[i],colors[i]==2,colors[i]>=1,x,y);
     x+=10;
+#ifndef MINIMAL_BUILD
     if(animated){
       display.display();
       delay(WORD_ANIMATION_DELAY);
     }
+#endif
   }
 }
 
@@ -163,6 +165,10 @@ void notInDictionary(){
 
 #define TRANSITION_TIME 200000
 void transition(uint8_t color){
+#ifdef MINIMAL_BUILD
+  display.fillRect(0,0,128,64,color);
+  display.display();
+#else
   long ts=micros();
   float f=0;
   do{
@@ -171,6 +177,7 @@ void transition(uint8_t color){
     display.fillRect(64-w/2,32-h/2,w,h,color);
     display.display();
   }while(f<1);
+#endif
 }
 
 void endgame(char* w, uint8_t wordLength, bool failed){
@@ -189,6 +196,7 @@ void endgame(char* w, uint8_t wordLength, bool failed){
 #define win(w,len) endgame(w,len,false)
 #define lose(w,len) endgame(w,len,true)
 
+#ifndef MINIMAL_BUILD
 void combo(uint8_t n){
   transition(SSD1306_WHITE);
   transition(SSD1306_BLACK);
@@ -203,10 +211,12 @@ void combo(uint8_t n){
   getButton();
   transition(SSD1306_BLACK);
 }
+#endif
 
 #define clearDisplay() display.clearDisplay()
 
 void splashScreen(){
+#ifndef MINIMAL_BUILD
   clearDisplay();
   printCentered(TINY_TINY,6,1,false);
   display.display();
@@ -243,6 +253,7 @@ void splashScreen(){
   display.display();
   getButton();
   transition(SSD1306_BLACK);
+#endif
 }
 
 void ioInit(){
