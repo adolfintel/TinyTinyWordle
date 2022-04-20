@@ -10,7 +10,7 @@ This project brings this popular word game to the Arduino Uno and compatible boa
 * A short tutorial
 * Animations!
 * Combos!!
-* English dictionary with 2315 words
+* English dictionary with 3579 words
 * Italian dictionary with 5984 words
 * A custom compression algorithm and a super tiny version of the display and graphics library to make all this possible
 
