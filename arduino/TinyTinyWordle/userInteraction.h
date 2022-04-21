@@ -157,8 +157,8 @@ void input(char* w, uint8_t wordLength, uint8_t attempt, uint8_t attempts){
 }
 
 void notInDictionary(){
-  display.fillRect(0,0,128,16,SSD1306_WHITE);
-  printCentered(NOT_IN_DICTIONARY,4,1,true);
+  display.fillRect(0,0,128,14,SSD1306_WHITE);
+  printCentered(NOT_IN_DICTIONARY,3,1,true);
   display.display();
   delay(1000);
 }
