@@ -48,7 +48,7 @@ bool game(){
   return false;
 }
 
-#ifdef MINIMAL_BUILD
+#ifdef DISABLE_COMBOS
 void gameLoop(){
   game();
 }

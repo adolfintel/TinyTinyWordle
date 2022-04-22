@@ -62,7 +62,7 @@ void displayWord(char* text, uint8_t* colors, uint8_t x, uint8_t y, uint8_t len,
   for(uint8_t i=0;i<len;i++){
     displayLetter(text[i],colors[i]==2,colors[i]>=1,x,y);
     x+=10;
-#ifndef MINIMAL_BUILD
+#ifndef DISABLE_ANIMATIONS
     if(animated){
       display.display();
       delay(WORD_ANIMATION_DELAY);
@@ -165,7 +165,7 @@ void notInDictionary(){
 
 #define TRANSITION_TIME 200000
 void transition(uint8_t color){
-#ifdef MINIMAL_BUILD
+#ifdef DISABLE_ANIMATIONS
   display.fillRect(0,0,128,64,color);
   display.display();
 #else
@@ -196,7 +196,7 @@ void endgame(char* w, uint8_t wordLength, bool failed){
 #define win(w,len) endgame(w,len,false)
 #define lose(w,len) endgame(w,len,true)
 
-#ifndef MINIMAL_BUILD
+#ifndef DISABLE_COMBOS
 void combo(uint8_t n){
   transition(SSD1306_WHITE);
   transition(SSD1306_BLACK);
@@ -215,8 +215,8 @@ void combo(uint8_t n){
 
 #define clearDisplay() display.clearDisplay()
 
+#ifndef DISABLE_SPLASH
 void splashScreen(){
-#ifndef MINIMAL_BUILD
   clearDisplay();
   printCentered(TINY_TINY,6,1,false);
   display.display();
@@ -228,6 +228,7 @@ void splashScreen(){
   display.display();
   getButton();
   transition(SSD1306_BLACK);
+#ifndef DISABLE_TUTORIAL
   printCentered(GUESS_THE_WORD,4,1,false);
   display.display();
   delay(200);
@@ -255,6 +256,7 @@ void splashScreen(){
   transition(SSD1306_BLACK);
 #endif
 }
+#endif
 
 void ioInit(){
   display.begin(SSD1306_SWITCHCAPVCC, DISPLAY_ADDRESS, DISPLAY_CLOCK);
