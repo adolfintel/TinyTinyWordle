@@ -1,8 +1,5 @@
-#include "ssd1306/MiniSSD1306.h"
+#include "MiniSSD1306.h"
 #include <Wire.h>
-
-#define DISPLAY_ADDRESS 0x3C
-#define DISPLAY_CLOCK 1000000UL //set this to 400000UL if you have rendering issues
 
 #define BUTTON_UP 2
 #define BUTTON_LEFT 3
@@ -37,23 +34,19 @@ uint8_t getButton(){
   }
 }
 
-MiniSSD1306 display(&Wire);
-
 void displayLetter(char c, bool inverted, bool border, uint8_t x, uint8_t y){
-  display.setTextSize(1);
+  setTextSize(1);
   if(inverted){
     if(border){
-      display.fillRect(x,y,9,11,SSD1306_WHITE);
+      fillRect(x,y,9,11,SSD1306_WHITE);
     }
-    display.setTextColor(SSD1306_BLACK, SSD1306_WHITE);
   }else{
     if(border){
-      display.drawRect(x,y,9,11,SSD1306_WHITE);
+      drawRect(x,y,9,11,SSD1306_WHITE);
     }
-    display.setTextColor(SSD1306_WHITE, SSD1306_BLACK);
   }
-  display.setCursor(x+2,y+2);
-  display.print(c);
+  setCursor(x+2,y+2);
+  displayWriteChar(c,inverted);
 }
 
 #define WORD_ANIMATION_DELAY 75
@@ -64,7 +57,7 @@ void displayWord(char* text, uint8_t* colors, uint8_t x, uint8_t y, uint8_t len,
     x+=10;
 #ifndef DISABLE_ANIMATIONS
     if(animated){
-      display.display();
+      refreshDisplay();
       delay(WORD_ANIMATION_DELAY);
     }
 #endif
@@ -72,11 +65,10 @@ void displayWord(char* text, uint8_t* colors, uint8_t x, uint8_t y, uint8_t len,
 }
 
 void printCentered(char* text, uint8_t y, uint8_t fontSize, bool inverted){
-  display.setTextColor(inverted?SSD1306_BLACK:SSD1306_WHITE,inverted?SSD1306_WHITE:SSD1306_BLACK);
-  display.setTextSize(fontSize);
+  setTextSize(fontSize);
   uint8_t x=(128-strlen(text)*6*fontSize)/2;
-  display.setCursor(x,y);
-  display.print(text);
+  setCursor(x,y);
+  displayWriteString(text,inverted);
 }
 
 #define SPACE_BETWEEN_COLUMNS 12
@@ -90,9 +82,9 @@ void output(char* w, uint8_t* colors, uint8_t attempt, uint8_t attempts, uint8_t
     }
     displayWord(w,colors,x,16+(attempt%attemptsPerColumn)*((64-16)/attemptsPerColumn),wordLength,true);
   }else{
-    display.fillRect(0,0,128,16,SSD1306_BLACK);
+    fillRect(0,0,128,16,SSD1306_BLACK);
     displayWord(w,colors,(128-(wordLength*10))/2,0,wordLength);
-    display.display();
+    refreshDisplay();
   }
 }
 
@@ -102,7 +94,7 @@ void input(char* w, uint8_t wordLength, uint8_t attempt, uint8_t attempts){
   }
   uint8_t currentPos=0;
   while(true){
-    display.fillRect(0,0,128,16,SSD1306_BLACK);
+    fillRect(0,0,128,16,SSD1306_BLACK);
     uint8_t colors[wordLength];
     for(uint8_t i=0;i<wordLength;i++){
       colors[i]=i==currentPos?2:1;
@@ -111,10 +103,9 @@ void input(char* w, uint8_t wordLength, uint8_t attempt, uint8_t attempts){
     displayLetter('>',currentPos==wordLength,currentPos==wordLength,128-10,0);
     char temp[8];
     sprintf(temp,"%d/%d",attempt,attempts);
-    display.setTextColor(SSD1306_WHITE, SSD1306_BLACK);
-    display.setCursor(0,2);
-    display.print(temp);
-    display.display();
+    setCursor(0,2);
+    displayWriteString(temp);
+    refreshDisplay();
     bool confirm=false;
     switch(getButton()){
       case BUTTON_UP:{
@@ -157,25 +148,25 @@ void input(char* w, uint8_t wordLength, uint8_t attempt, uint8_t attempts){
 }
 
 void notInDictionary(){
-  display.fillRect(0,0,128,14,SSD1306_WHITE);
+  fillRect(0,0,128,14,SSD1306_WHITE);
   printCentered(NOT_IN_DICTIONARY,3,1,true);
-  display.display();
+  refreshDisplay();
   delay(1000);
 }
 
 #define TRANSITION_TIME 200000
 void transition(uint8_t color){
 #ifdef DISABLE_ANIMATIONS
-  display.fillRect(0,0,128,64,color);
-  display.display();
+  fillRect(0,0,128,64,color);
+  refreshDisplay();
 #else
   long ts=micros();
   float f=0;
   do{
     f=(float)(micros()-ts)/(float)(TRANSITION_TIME);
     uint8_t w=f*128, h=f*64;
-    display.fillRect(64-w/2,32-h/2,w,h,color);
-    display.display();
+    fillRect(64-w/2,32-h/2,w,h,color);
+    refreshDisplay();
   }while(f<1);
 #endif
 }
@@ -185,10 +176,10 @@ void endgame(char* w, uint8_t wordLength, bool failed){
   transition(failed?SSD1306_BLACK:SSD1306_WHITE);
   printCentered(w,26,3,!failed);
   printCentered(failed?THE_WORD_WAS:WELL_DONE,5,1,!failed);
-  display.display();
+  refreshDisplay();
   delay(1000);
   printCentered(PRESS_A_BUTTON,55,1,!failed);
-  display.display();
+  refreshDisplay();
   getButton();
   transition(SSD1306_BLACK);
 }
@@ -204,54 +195,49 @@ void combo(uint8_t n){
   char temp[8];
   sprintf(temp,"x%d",n);
   printCentered(temp,22,3,false);
-  display.display();
+  refreshDisplay();
   delay(1000);
   printCentered(PRESS_A_BUTTON,55,1,false);
-  display.display();
+  refreshDisplay();
   getButton();
   transition(SSD1306_BLACK);
 }
 #endif
 
-#define clearDisplay() display.clearDisplay()
-
 #ifndef DISABLE_SPLASH
 void splashScreen(){
   clearDisplay();
   printCentered(TINY_TINY,6,1,false);
-  display.display();
+  refreshDisplay();
   delay(300);
   printCentered(WORDLE,22,3,false);
-  display.display();
+  refreshDisplay();
   delay(300);
   printCentered(PRESS_A_BUTTON,52,1,false);
-  display.display();
+  refreshDisplay();
   getButton();
   transition(SSD1306_BLACK);
 #ifndef DISABLE_TUTORIAL
   printCentered(GUESS_THE_WORD,4,1,false);
-  display.display();
+  refreshDisplay();
   delay(200);
   displayLetter('A',true,true,4,16);
-  display.setTextColor(SSD1306_WHITE, SSD1306_BLACK);
-  display.setCursor(18,18);
-  display.print(CORRECT_LETTER);
-  display.display();
+  setCursor(18,18);
+  displayWriteString(CORRECT_LETTER);
+  refreshDisplay();
   delay(100);
   displayLetter('A',false,true,4,28);
-  display.setTextColor(SSD1306_WHITE, SSD1306_BLACK);
-  display.setCursor(18,30);
-  display.print(WRONG_POSITION);
-  display.display();
+  setCursor(18,30);
+  displayWriteString(WRONG_POSITION);
+  refreshDisplay();
   delay(100);
   displayLetter('A',false,false,4,40);
-  display.setTextColor(SSD1306_WHITE, SSD1306_BLACK);
-  display.setCursor(18,42);
-  display.print(WRONG_LETTER);
-  display.display();
+  setCursor(18,42);
+  displayWriteString(WRONG_LETTER);
+  refreshDisplay();
   delay(100);
   printCentered(PRESS_A_BUTTON,54,1,false);
-  display.display();
+  refreshDisplay();
   getButton();
   transition(SSD1306_BLACK);
 #endif
@@ -259,7 +245,7 @@ void splashScreen(){
 #endif
 
 void ioInit(){
-  display.begin(SSD1306_SWITCHCAPVCC, DISPLAY_ADDRESS, DISPLAY_CLOCK);
+  displayInit();
   pinMode(BUTTON_UP,INPUT_PULLUP);
   pinMode(BUTTON_LEFT,INPUT_PULLUP);
   pinMode(BUTTON_DOWN,INPUT_PULLUP);

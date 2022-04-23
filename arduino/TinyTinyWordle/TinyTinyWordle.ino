@@ -26,7 +26,3 @@ void setup() {
 #endif
   dictionaryInit();
 }
-
-void loop(){
-  gameLoop();
-}
