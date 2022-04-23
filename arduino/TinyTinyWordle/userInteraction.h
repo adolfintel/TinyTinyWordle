@@ -34,7 +34,6 @@ uint8_t getButton(){
 }
 
 void displayLetter(char c, bool inverted, bool border, uint8_t x, uint8_t y){
-  setTextSize(1);
   if(inverted){
     if(border){
       fillRect(x,y,9,11,SSD1306_WHITE);
@@ -44,8 +43,7 @@ void displayLetter(char c, bool inverted, bool border, uint8_t x, uint8_t y){
       drawRect(x,y,9,11,SSD1306_WHITE);
     }
   }
-  setCursor(x+2,y+2);
-  displayWriteChar(c,inverted);
+  displayWriteChar(c,x+2,y+2,inverted);
 }
 
 #define WORD_ANIMATION_DELAY 75
@@ -64,10 +62,7 @@ void displayWord(char* text, uint8_t* colors, uint8_t x, uint8_t y, uint8_t len,
 }
 
 void printCentered(char* text, uint8_t y, uint8_t fontSize, bool inverted){
-  setTextSize(fontSize);
-  uint8_t x=(128-strlen(text)*6*fontSize)/2;
-  setCursor(x,y);
-  displayWriteString(text,inverted);
+  displayWriteString(text,(128-strlen(text)*6*fontSize)/2,y,inverted,fontSize);
 }
 
 #define SPACE_BETWEEN_COLUMNS 12
@@ -102,8 +97,7 @@ void input(char* w, uint8_t wordLength, uint8_t attempt, uint8_t attempts){
     displayLetter('>',currentPos==wordLength,currentPos==wordLength,128-10,0);
     char temp[8];
     sprintf(temp,"%d/%d",attempt,attempts);
-    setCursor(0,2);
-    displayWriteString(temp);
+    displayWriteString(temp,0,2);
     refreshDisplay();
     bool confirm=false;
     switch(getButton()){
@@ -221,18 +215,15 @@ void splashScreen(){
   refreshDisplay();
   delay(200);
   displayLetter('A',true,true,4,16);
-  setCursor(18,18);
-  displayWriteString(CORRECT_LETTER);
+  displayWriteString(CORRECT_LETTER,18,18);
   refreshDisplay();
   delay(100);
   displayLetter('A',false,true,4,28);
-  setCursor(18,30);
-  displayWriteString(WRONG_POSITION);
+  displayWriteString(WRONG_POSITION,18,30);
   refreshDisplay();
   delay(100);
   displayLetter('A',false,false,4,40);
-  setCursor(18,42);
-  displayWriteString(WRONG_LETTER);
+  displayWriteString(WRONG_LETTER,18,42);
   refreshDisplay();
   delay(100);
   printCentered(PRESS_A_BUTTON,54,1,false);

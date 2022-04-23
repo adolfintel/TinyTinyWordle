@@ -339,8 +339,6 @@ static const uint8_t font[] PROGMEM = {
 };
 #endif
 
-int16_t cursor_x = 0, cursor_y = 0;
-uint8_t textsize = 1;
 uint8_t *buffer = NULL;
 
 void clearDisplay(void) {
@@ -503,16 +501,13 @@ void drawRect(int16_t x, int16_t y, int16_t w, int16_t h,
   drawFastVLine(x + w - 1, y, h, color);
 }
 
-void displayWriteChar(uint8_t c, bool inverted) {
+void displayWriteChar(uint8_t c, int16_t x, int16_t y,  bool inverted=false, uint8_t textsize=1) {
   uint8_t fg = inverted ? SSD1306_BLACK : SSD1306_WHITE, bg = inverted ? SSD1306_WHITE : SSD1306_BLACK;
-  if (c == '\n') {
-    cursor_x = 0;
-    cursor_y += textsize * 8;
-  } else {
+  {
 #ifdef REDUCED_CHARSET
     bool displayable = true;
 #endif
-    if ((cursor_x >= 128) || (cursor_y >= 64) || ((cursor_x + 6 * textsize - 1) < 0) || ((cursor_y + 8 * textsize - 1) < 0)) return;
+    if ((x >= 128) || (y >= 64) || ((x + 6 * textsize - 1) < 0) || ((y + 8 * textsize - 1) < 0)) return;
 #ifdef REDUCED_CHARSET
     if (c >= 'A' && c <= 'Z') {
       c -= 'A' - 14;
@@ -534,27 +529,18 @@ void displayWriteChar(uint8_t c, bool inverted) {
       for (uint8_t i = 0; i < 5; i++) {
         uint8_t line = pgm_read_byte(&font[c * 5 + i]);
         for (uint8_t j = 0; j < 8; j++, line >>= 1) {
-          fillRect(cursor_x + i * textsize, cursor_y + j * textsize, textsize, textsize, line & 1 ? fg : bg);
+          fillRect(x + i * textsize, y + j * textsize, textsize, textsize, line & 1 ? fg : bg);
         }
       }
 #ifdef REDUCED_CHARSET
     }
 #endif
-    cursor_x += textsize * 6;
   }
 }
 
-void setTextSize(uint8_t s) {
-  textsize = s < 1 ? 1 : s;
-}
-
-void setCursor(int16_t x, int16_t y) {
-  cursor_x = x;
-  cursor_y = y;
-}
-
-void displayWriteString(char* s, bool inverted = false) {
+void displayWriteString(char* s, int16_t x, int16_t y, bool inverted = false, uint8_t textsize=1) {
   while (*s != '\0') {
-    displayWriteChar(*(s++), inverted);
+    displayWriteChar(*(s++), x, y, inverted, textsize);
+    x+=6*textsize;
   }
 }
