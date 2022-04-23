@@ -30,6 +30,9 @@ bool game(){
   char sol[wordLength+1], userWord[wordLength+1];
   uint8_t colors[wordLength];
   getRandomWord(sol);
+#ifdef SERIAL_DEBUG
+  Serial.println(sol);
+#endif
   for(uint8_t attempt=0;attempt<ATTEMPTS;attempt++){
     input(userWord,wordLength,attempt+1,ATTEMPTS);
     if(isWordInDictionary(userWord)){

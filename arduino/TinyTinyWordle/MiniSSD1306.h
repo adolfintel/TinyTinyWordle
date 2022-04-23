@@ -4,7 +4,6 @@
 #define DISPLAY_CLOCK 1000000UL
 
 #include <Wire.h>
-#include <avr/pgmspace.h>
 
 #define SSD1306_BLACK 0
 #define SSD1306_WHITE 1
@@ -345,7 +344,7 @@ uint8_t textsize = 1;
 uint8_t *buffer = NULL;
 
 void clearDisplay(void) {
-  memset(buffer, 0, 128 * ((64 + 7) / 8));
+  memset(buffer, 0, 128 * 64 / 8);
 }
 
 void ssd1306_sendData(const uint8_t *c, uint16_t n, uint8_t op) {
@@ -364,7 +363,7 @@ void ssd1306_sendData(const uint8_t *c, uint16_t n, uint8_t op) {
 }
 
 void displayInit() {
-  buffer = malloc(128 * ((64 + 7) / 8));
+  buffer = malloc(128 * 64 / 8);
   clearDisplay();
   Wire.begin();
   Wire.setClock(DISPLAY_CLOCK);
@@ -487,7 +486,7 @@ void refreshDisplay(void) {
     0x7F
   };
   ssd1306_sendData(dlist1, sizeof(dlist1),0x00);
-  ssd1306_sendData(buffer, 128 * ((64 + 7) / 8),0x40);
+  ssd1306_sendData(buffer, 128 * 64 / 8,0x40);
 }
 
 void fillRect(int16_t x, int16_t y, int16_t w, int16_t h, uint8_t color) {

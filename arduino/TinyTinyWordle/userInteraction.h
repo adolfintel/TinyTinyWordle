@@ -1,5 +1,4 @@
 #include "MiniSSD1306.h"
-#include <Wire.h>
 
 #define BUTTON_UP 2
 #define BUTTON_LEFT 3
