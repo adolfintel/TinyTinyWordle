@@ -2,11 +2,10 @@
 #include<stdint.h>
 #include<stdlib.h>
 #include<string.h>
-#include<math.h>
 
 uint8_t* compress(char* in, int* compressedSize){
     int len=strlen(in);
-    *compressedSize=(int)ceil(len*5.0/8.0);
+    *compressedSize=(len*5+7)/8;
     uint8_t* ret=malloc(*compressedSize);
     for(int i=0;i<*compressedSize;i++){
         ret[i]=0;

@@ -1,2 +1,2 @@
 #!/bin/bash
-gcc -o cookDictionary cookDictionary.c -lm
+gcc -o cookDictionary cookDictionary.c
