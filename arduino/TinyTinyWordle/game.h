@@ -1,8 +1,14 @@
 #define ATTEMPTS 6
 
 bool check(char* in, char* solution, uint8_t len, uint8_t* colorout){
+    bool solved=true;
     for(uint8_t i=0;i<len;i++){
-        if(in[i]==solution[i]) colorout[i]=2; else colorout[i]=0;
+        if(in[i]==solution[i]){
+          colorout[i]=2;
+        }else{
+          colorout[i]=0;
+          solved=false;
+        }
     }
     for(uint8_t i=0;i<len;i++){
         if(colorout[i]==0){
@@ -19,10 +25,7 @@ bool check(char* in, char* solution, uint8_t len, uint8_t* colorout){
             }
         }
     }
-    for(uint8_t i=0;i<len;i++){
-        if(colorout[i]!=2) return false;
-    }
-    return true;
+    return solved;
 }
 
 bool game(){
