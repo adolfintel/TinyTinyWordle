@@ -3,7 +3,12 @@ The World's smallest Wordle clone (Probably!)
 
 This project brings this popular word game to the Arduino Uno and compatible boards, with a massive dictionary of up to 6000 words.
 
-![Demo video](.github/demo.gif)
+![Picture of the device](.github/cover1.jpg)
+
+![Picture of the game](.github/cover2.jpg)
+
+## Demo video
+[Click here to see a video of the game in action](.github/demo.mp4)
 
 ## Features
 * The game that we all know and love
@@ -15,7 +20,7 @@ This project brings this popular word game to the Arduino Uno and compatible boa
 * A custom compression algorithm and a super tiny version of the display and graphics library to make all this possible
 
 ## Requirements
-* An Arduino Uno or compatible board
+* An Arduino Uno or compatible board (the one shown in the image uses an Arduino Nano)
 * A 128x64 Adafruit SSD1306 OLED display with I2C interface (that's the version with SDA/SCL pins and address 0x3C)
 * 4 buttons, normally open
 * A breadboard and some wires to put it all together
