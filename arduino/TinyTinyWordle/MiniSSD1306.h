@@ -1,7 +1,8 @@
 //This is an extremely cut down version of the adafruit SSD1306 and GFX libraries combined into a very small file with the bare minimum functionality required for TTW
 
 #define DISPLAY_ADDRESS 0x3C
-#define DISPLAY_CLOCK 1000000UL
+#define DISPLAY_CLOCK_FAST 1000000UL
+#define DISPLAY_CLOCK_POWERSAVE 100000UL
 
 #include <Wire.h>
 
@@ -346,6 +347,7 @@ void clearDisplay(void) {
 }
 
 void ssd1306_sendData(const uint8_t *c, uint16_t n, uint8_t op) {
+  Wire.setClock(DISPLAY_CLOCK_FAST);
   uint8_t bytesOut = 0x20;
   while (n--) {
     if (bytesOut & 0x20) {
@@ -358,13 +360,13 @@ void ssd1306_sendData(const uint8_t *c, uint16_t n, uint8_t op) {
     bytesOut++;
   }
   Wire.endTransmission();
+  Wire.setClock(DISPLAY_CLOCK_POWERSAVE);
 }
 
 void displayInit() {
   buffer = malloc(128 * 64 / 8);
   clearDisplay();
   Wire.begin();
-  Wire.setClock(DISPLAY_CLOCK);
   // Init sequence
   static const uint8_t initSeq[] = {
     0xAE,
